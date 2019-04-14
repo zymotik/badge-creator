@@ -18,3 +18,7 @@ To create a distributable file for Windows/Apple Mac/Linux users you will first 
 2. Compile code: `npm run build`
 
 Distributable files will be in the `./bin` folder. Edit the templates in the `./bin/templates` folder. Zip all the files in the `./bin` folder and distrubute to those wishing to generate badges.
+
+## Instructions for Users Printing Passes
+
+[Instructions can be found here](./application-readme.md)
