@@ -14,6 +14,7 @@
     "hummus": "^1.0.98",
     "hummus-recipe": "^1.8.5",
     "moment-mini": "^2.22.1",
+    "readline": "^1.3.0",
     "xlsx": "^0.14.2"
   },
   "devDependencies": {
@@ -24,10 +25,10 @@
       "node_modules/hummus-recipe/lib/*.js"
     ],
     "assets": [
-      "node_modules/linebreak/src/classes.trie", 
+      "node_modules/linebreak/src/classes.trie",
       "node_modules/hummus-recipe/fonts/**/*",
-      "templates/**/*", 
-      "pass-list.xlsx" 
+      "templates/**/*",
+      "pass-list.xlsx"
     ]
   }
 }

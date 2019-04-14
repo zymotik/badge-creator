@@ -4,30 +4,52 @@ const excel = require('./excel');
 const colors = require('colors');
 const moment = require('moment-mini');
 const file = require('./files');
+const readline = require('readline');
 
 const excelPassListFile = './pass-list.xlsx';
 const pdfTemplates = ['early', 'backstage', 'early-backstage'];
 const passesPerPage = 10;
 
-function main() {
+async function main() {
     const timestamp = moment();
     const rows = excel.getRows(excelPassListFile);
     const accessEarly = rows.filter((r) => !r.Generated && simplifyString(r.AccessRequired) === 'early');
     const accessBackstage = rows.filter((r) => !r.Generated && simplifyString(r.AccessRequired) === 'backstage');
     const accessEarlyBackstage = rows.filter((r) => !r.Generated && simplifyString(r.AccessRequired) === 'earlybackstage');
 
-    console.log(`Generating: 
-                ${colors.green(accessEarly.length.toString().padStart(3, '0'))} early passes 
-                ${colors.green(accessBackstage.length.toString().padStart(3, '0'))} backstage passes
-                ${colors.green(accessEarlyBackstage.length.toString().padStart(3, '0'))} early & backstage passes`);
+    if (rows.filter((r) => !r.Generated).length > 0){
+        console.log(`Ready to generate: 
+        ${colors.green(accessEarly.length.toString().padStart(3, '0'))} early passes 
+        ${colors.green(accessBackstage.length.toString().padStart(3, '0'))} backstage passes
+        ${colors.green(accessEarlyBackstage.length.toString().padStart(3, '0'))} early & backstage passes`);
 
-    accessEarly.length > 0 && generateFile(pdfTemplates[0], accessEarly, timestamp);
-    accessBackstage.length > 0 && generateFile(pdfTemplates[1], accessBackstage, timestamp);
-    accessEarlyBackstage.length > 0 && generateFile(pdfTemplates[2], accessEarlyBackstage, timestamp);
-
-    markRowsAsGenerated([...accessEarly, ...accessBackstage, ...accessEarlyBackstage], timestamp);
+        await askQuestion('Press enter to continue:');
     
-    excel.saveRows(rows, excelPassListFile);
+        accessEarly.length > 0 && generateFile(pdfTemplates[0], accessEarly, timestamp);
+        accessBackstage.length > 0 && generateFile(pdfTemplates[1], accessBackstage, timestamp);
+        accessEarlyBackstage.length > 0 && generateFile(pdfTemplates[2], accessEarlyBackstage, timestamp);
+    
+        markRowsAsGenerated([...accessEarly, ...accessBackstage, ...accessEarlyBackstage], timestamp);
+        
+        excel.saveRows(rows, excelPassListFile);    
+
+        return await askQuestion('Done. Press enter to quit.');
+    }
+
+    await askQuestion('No records to process. Press enter to quit.');
+}
+
+function askQuestion(query) {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    return new Promise(resolve => rl.question(`\n${query}`, ans => {
+        rl.close();
+        console.log();
+        resolve(ans);
+    }))
 }
 
 function markRowsAsGenerated(passList, timestamp) {
@@ -38,6 +60,7 @@ function generateFile(templateFile, passList, timestamp) {
     const totalCount = passList.length;
     let page = 1;
     const generatedFiles = [];
+    const outputFileName = `./export/${timestamp.format('YYYYMMDD-HHmmss')}-${templateFile}.pdf`;
 
     for(let i=0; i<totalCount; i+=passesPerPage){
         let replacements = generateReplacements(passList, i, passesPerPage);
@@ -46,8 +69,9 @@ function generateFile(templateFile, passList, timestamp) {
         page+=1;
         generatedFiles.push(generateFilename);
     }
-
-    pdf.mergePdfFiles(generatedFiles, `./export/${timestamp.format('YYYYMMDD-HHmmss')}-${templateFile}.pdf`);
+    
+    pdf.mergePdfFiles(generatedFiles, outputFileName);
+    console.log(`Generated ${colors.green(totalCount.toString().padStart(3,'0'))} passes into ${colors.green(outputFileName)}`)
 }
 
 function generateReplacements(passList, pageIndex, passesPerPage) {
