@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "pkg package.json --out-path ./bin"
   },
+  "bin": "./index.js",
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -14,5 +15,19 @@
     "hummus-recipe": "^1.8.5",
     "moment-mini": "^2.22.1",
     "xlsx": "^0.14.2"
+  },
+  "devDependencies": {
+    "pkg": "^4.3.7"
+  },
+  "pkg": {
+    "scripts": [
+      "node_modules/hummus-recipe/lib/*.js"
+    ],
+    "assets": [
+      "node_modules/linebreak/src/classes.trie", 
+      "node_modules/hummus-recipe/fonts/**/*",
+      "templates/**/*", 
+      "pass-list.xlsx" 
+    ]
   }
 }
