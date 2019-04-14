@@ -4,7 +4,7 @@ const excel = require('./excel');
 const colors = require('colors');
 const moment = require('moment-mini');
 const file = require('./files');
-const readline = require('readline');
+const input = require('./input');
 
 const excelPassListFile = './pass-list.xlsx';
 const pdfTemplates = ['early', 'backstage', 'early-backstage'];
@@ -23,7 +23,7 @@ async function main() {
         ${colors.green(accessBackstage.length.toString().padStart(3, '0'))} backstage passes
         ${colors.green(accessEarlyBackstage.length.toString().padStart(3, '0'))} early & backstage passes`);
 
-        await askQuestion('Press enter to continue:');
+        await input.askQuestion('Press enter to continue:');
     
         accessEarly.length > 0 && generateFile(pdfTemplates[0], accessEarly, timestamp);
         accessBackstage.length > 0 && generateFile(pdfTemplates[1], accessBackstage, timestamp);
@@ -31,25 +31,12 @@ async function main() {
     
         markRowsAsGenerated([...accessEarly, ...accessBackstage, ...accessEarlyBackstage], timestamp);
         
-        excel.saveRows(rows, excelPassListFile);    
+        await excel.saveRows(rows, excelPassListFile);    
 
-        return await askQuestion('Done. Press enter to quit.');
+        return await input.askQuestion('Done. Press enter to quit.');
     }
 
-    await askQuestion('No records to process. Press enter to quit.');
-}
-
-function askQuestion(query) {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-
-    return new Promise(resolve => rl.question(`\n${query}`, ans => {
-        rl.close();
-        console.log();
-        resolve(ans);
-    }))
+    await input.askQuestion('No records to process. Press enter to quit.');
 }
 
 function markRowsAsGenerated(passList, timestamp) {
@@ -140,4 +127,3 @@ function init() {
 if (init()) {
     main();
 }
-

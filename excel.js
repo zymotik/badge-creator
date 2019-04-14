@@ -1,8 +1,10 @@
 const xlsx = require('xlsx');
+const input = require('./input');
+const colors = require('colors');
 
 module.exports = {
-    getRows: getRows,
-    saveRows: saveRows,
+    getRows,
+    saveRows,
 }
 
 const xlsxOptions = { cellStyles: true };
@@ -19,9 +21,18 @@ function getRows(filename) {
     return cells;
 }
 
-function saveRows(rows, filename) {
-    const workbook = xlsx.readFile(filename, xlsxOptions);
-    const worksheet = xlsx.utils.json_to_sheet(rows);
-    workbook.Sheets[workbook.SheetNames[0]] = worksheet;
-    xlsx.writeFile(workbook, filename, xlsxOptions);
+async function saveRows(rows, filename) {
+    let success = false;
+    while (!success) {
+        try { 
+            const workbook = xlsx.readFile(filename, xlsxOptions);
+            const worksheet = xlsx.utils.json_to_sheet(rows);
+            workbook.Sheets[workbook.SheetNames[0]] = worksheet;
+            xlsx.writeFile(workbook, filename, xlsxOptions);
+            success = true;    
+        } catch (e) {
+            console.log(colors.red(`\nError: ${e.message}`));
+            await input.askQuestion('This could be because you have the file open.\nPlease close the file and press enter to try again.')
+        }
+    }
 }
