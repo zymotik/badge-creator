@@ -4,8 +4,8 @@ const hummus = require('hummus');
 const hummusRecipe = require('hummus-recipe');
 
 module.exports = {
-	replaceText: replaceText,
-	mergePdfFiles: mergePdfFiles
+	replaceText,
+	mergePdfFiles,
 }
 
 function mergePdfFiles(fromFilenames, intoFilename) {
