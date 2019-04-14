@@ -3,11 +3,13 @@ const pdf = require('./pdf');
 const excel = require('./excel');
 const colors = require('colors');
 const moment = require('moment-mini');
+const file = require('./files');
 
 const excelPassListFile = './pass-list.xlsx';
+const pdfTemplates = ['early', 'backstage', 'early-backstage'];
+const passesPerPage = 10;
 
 function main() {
-    // TODO: create required folders if they do not exist
     const timestamp = moment();
     const rows = excel.getRows(excelPassListFile);
     const accessEarly = rows.filter((r) => !r.Generated && simplifyString(r.AccessRequired) === 'early');
@@ -19,9 +21,9 @@ function main() {
                 ${colors.green(accessBackstage.length.toString().padStart(3, '0'))} backstage passes
                 ${colors.green(accessEarlyBackstage.length.toString().padStart(3, '0'))} early & backstage passes`);
 
-    accessEarly.length > 0 && generateFile('template-early', accessEarly, timestamp);
-    accessBackstage.length > 0 && generateFile('template-backstage', accessBackstage, timestamp);
-    accessEarlyBackstage.length > 0 && generateFile('template-early-backstage', accessEarlyBackstage, timestamp);
+    accessEarly.length > 0 && generateFile(pdfTemplates[0], accessEarly, timestamp);
+    accessBackstage.length > 0 && generateFile(pdfTemplates[1], accessBackstage, timestamp);
+    accessEarlyBackstage.length > 0 && generateFile(pdfTemplates[2], accessEarlyBackstage, timestamp);
 
     markRowsAsGenerated([...accessEarly, ...accessBackstage, ...accessEarlyBackstage], timestamp);
     
@@ -34,14 +36,13 @@ function markRowsAsGenerated(passList, timestamp) {
 
 function generateFile(templateFile, passList, timestamp) {
     const totalCount = passList.length;
-    const passesPerPage = 10;
     let page = 1;
     const generatedFiles = [];
 
     for(let i=0; i<totalCount; i+=passesPerPage){
         let replacements = generateReplacements(passList, i, passesPerPage);
         const generateFilename = `./temp/${templateFile}-${page}.pdf`;
-        pdf.replaceText(`./${templateFile}.pdf`, generateFilename, replacements);
+        pdf.replaceText(`./templates/${templateFile}.pdf`, generateFilename, replacements);
         page+=1;
         generatedFiles.push(generateFilename);
     }
@@ -93,4 +94,26 @@ function simplifyString(input) {
     return input.toLowerCase().replace(/ /g, '').replace('&', '').replace('and', '');
 }
 
-main();
+function init() {
+    try {
+        pdfTemplates.map((filename) => {
+            const fileAndPath = `./templates/${filename}.pdf`;
+            if (!file.checkExists(fileAndPath)) {
+                throw new Error(`File '${fileAndPath}' cannot be found!`);
+            }
+        });
+        file.createDirectory('./temp');    
+        file.createDirectory('./export');
+        file.emptyDirectory('temp');
+    } catch (e) {
+        console.log(colors.red(e.message));
+        return false;
+    }
+
+    return true;
+}
+
+if (init()) {
+    main();
+}
+
