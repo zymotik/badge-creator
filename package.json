@@ -9,7 +9,8 @@
     "build:create-package": "pkg package.json --out-path ./bin",
     "build:copy-templates": "cpy ./templates/*.pdf ./bin/templates",
     "build:copy-demo-list": "cpy ./pass-list.xlsx ./bin",
-    "build:copy-instructions": "cpy ./application-readme.md ./bin --rename=readme.md"
+    "build:copy-instructions": "cpy ./application-readme.md ./bin --rename=readme.md",
+    "build:copy-hummus": "cpy ./node_modules/hummus/binding/hummus.node ./bin"
   },
   "bin": "./index.js",
   "author": "",
