@@ -71,27 +71,27 @@ function generateReplacements(passList, pageIndex, passesPerPage) {
 
 function generatePassReplacement(passList, passIndex, tokenIndex){
     const pass = passList[passIndex];
-    const token = (tokenIndex + 1).toString().padStart(2, '0');
+    const token = tokenIndex.toString();
 
     if (pass){
         return [
             {
-                regEx: `{{n${token}}}`,
+                regEx: `n${token}`,
                 text: pass.Person
             },
             {
-                regEx: `{{d${token}}}`,
+                regEx: `d${token}`,
                 text: pass.Department
             }
         ];
     }
     return [
         {
-            regEx: `{{n${token}}}`,
+            regEx: `n${token}`,
             text: 'THIS PASS IS VOID'
         },
         {
-            regEx: `{{d${token}}}`,
+            regEx: `d${token}`,
             text: 'INVALID - DESTROY'
         }
     ];
