@@ -15,7 +15,8 @@ Fill the included Excel list ([pass-list.xlsx](./pass-list.xlsx)) with authorise
 To create a distributable file for Windows/Apple Mac/Linux users you will first need to install [Git](https://git-scm.com/downloads) to clone this repository and [Node.js](https://nodejs.org/en/download/) to compile the code. 
 
 1. Clone the repository to your computer: `git clone https://github.com/zymotik/badge-creator.git`
-2. Compile code: `npm run build`
+2. Install libraries: `npm ci`
+3. Compile code: `npm run build`
 
 Distributable files will be in the `./bin` folder. Edit the templates in the `./bin/templates` folder. Zip all the files in the `./bin` folder and distrubute to those wishing to generate badges.
 
