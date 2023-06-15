@@ -10,8 +10,8 @@ module.exports = {
 const xlsxOptions = { cellStyles: true };
 
 /**
- * 
- * @param {*} filename 
+ *
+ * @param {*} filename
  * @returns { [ { AccessRequired: string, Department: string, Person: string, Timestamp: number, Generated: Date }] }
  */
 function getRows(filename) {
@@ -24,12 +24,12 @@ function getRows(filename) {
 async function saveRows(rows, filename) {
     let success = false;
     while (!success) {
-        try { 
+        try {
             const workbook = xlsx.readFile(filename, xlsxOptions);
             const worksheet = xlsx.utils.json_to_sheet(rows);
             workbook.Sheets[workbook.SheetNames[0]] = worksheet;
             xlsx.writeFile(workbook, filename, xlsxOptions);
-            success = true;    
+            success = true;
         } catch (e) {
             console.log(colors.red(`\nError: ${e.message}`));
             await input.askQuestion('This could be because you have the file open.\nPlease close the file and press enter to try again.')

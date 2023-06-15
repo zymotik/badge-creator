@@ -16,7 +16,7 @@ function createDirectory(directoryName){
 function emptyDirectory(directoryName) {
     fs.readdir(directoryName, (err, files) => {
         if (err) throw err;
-      
+
         for (const file of files) {
           fs.unlink(path.join(directoryName, file), err => {
             if (err) throw err;

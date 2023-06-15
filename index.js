@@ -18,20 +18,20 @@ async function main() {
     const accessEarlyBackstage = rows.filter((r) => !r.Generated && simplifyString(r.AccessRequired) === 'earlybackstage');
 
     if (rows.filter((r) => !r.Generated).length > 0){
-        console.log(`Ready to generate: 
-        ${colors.green(accessEarly.length.toString().padStart(3, '0'))} early passes 
+        console.log(`Ready to generate:
+        ${colors.green(accessEarly.length.toString().padStart(3, '0'))} early passes
         ${colors.green(accessBackstage.length.toString().padStart(3, '0'))} backstage passes
         ${colors.green(accessEarlyBackstage.length.toString().padStart(3, '0'))} early & backstage passes`);
 
         await input.askQuestion('Press enter to continue:');
-    
+
         accessEarly.length > 0 && generateFile(pdfTemplates[0], accessEarly, timestamp);
         accessBackstage.length > 0 && generateFile(pdfTemplates[1], accessBackstage, timestamp);
         accessEarlyBackstage.length > 0 && generateFile(pdfTemplates[2], accessEarlyBackstage, timestamp);
-    
+
         markRowsAsGenerated([...accessEarly, ...accessBackstage, ...accessEarlyBackstage], timestamp);
-        
-        await excel.saveRows(rows, excelPassListFile);    
+
+        await excel.saveRows(rows, excelPassListFile);
 
         return await input.askQuestion('Done. Press enter to quit.');
     }
@@ -56,7 +56,7 @@ function generateFile(templateFile, passList, timestamp) {
         page+=1;
         generatedFiles.push(generateFilename);
     }
-    
+
     pdf.mergePdfFiles(generatedFiles, outputFileName);
     console.log(`Generated ${colors.green(totalCount.toString().padStart(3,'0'))} passes into ${colors.green(outputFileName)}`)
 }
@@ -99,7 +99,7 @@ function generatePassReplacement(passList, passIndex, tokenIndex){
 
 /**
  * Simplify string to protect against users entering lowercase or incorrect values
- * @param {string} input 
+ * @param {string} input
  */
 function simplifyString(input) {
     return input.toLowerCase().replace(/ /g, '').replace('&', '').replace('and', '');
@@ -113,7 +113,7 @@ function init() {
                 throw new Error(`File '${fileAndPath}' cannot be found!`);
             }
         });
-        file.createDirectory('./temp');    
+        file.createDirectory('./temp');
         file.createDirectory('./export');
         file.emptyDirectory('temp');
     } catch (e) {
